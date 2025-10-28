@@ -223,9 +223,22 @@ function closeDrawer() {
 		const res = await window.api.readMonthJson(currentMonth);
 		if (!res.ok) return renderNoResults();
 		const rows = res.rows || [];
-		const filtered = empId
-			? rows.filter((r) => Object.values(r).some((v) => String(v).toLowerCase() === empId.toLowerCase()))
-			: rows;
+	let filtered = rows;
+	if (empId) {
+		// Prefer matching by employee_id (or similar) exactly
+		const headers = Object.keys(rows[0] || {});
+		const lowerToActual = Object.fromEntries(headers.map(h => [h.toLowerCase(), h]));
+		const candidateKeys = ['employee_id', 'emp_id', 'employeeid', 'employee id', 'id'];
+		const matchKey = candidateKeys.map(k => lowerToActual[k]).find(Boolean);
+		if (matchKey) {
+			filtered = rows.filter(r => String(r[matchKey]).toLowerCase() === empId.toLowerCase());
+		} else {
+			// fallback: any-cell exact match
+			filtered = rows.filter((r) => Object.values(r).some((v) => String(v).toLowerCase() === empId.toLowerCase()));
+		}
+		// Show only one record (first match)
+		if (filtered.length > 1) filtered = [filtered[0]];
+	}
 	renderTable(filtered);
 	renderSummary(filtered);
 	}
