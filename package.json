@@ -3,15 +3,53 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "productName": "Employee Manager",
   "scripts": {
     "start": "electron .",
-    "dev": "electron ."
+    "dev": "electron .",
+    "build:win": "electron-builder --win nsis",
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "build": {
+    "appId": "com.indigo.employee-manager",
+    "productName": "Employee Manager",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**",
+      "!node_modules/.cache/**"
+    ],
+    "extraResources": [
+      "data/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
   "dependencies": {
-    "electron": "^28.3.3",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
   }
 }
