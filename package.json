@@ -1,0 +1,17 @@
+{
+  "name": "employee-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^28.3.3",
+    "xlsx": "^0.18.5"
+  }
+}

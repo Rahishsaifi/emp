@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="48" viewBox="0 0 200 48">
+  <rect width="200" height="48" rx="8" fill="#000099"/>
+  <text x="24" y="30" font-family="Segoe UI, Roboto, Arial, sans-serif" font-size="22" fill="#ffffff" font-weight="700">IndiGo</text>
+  <circle cx="170" cy="24" r="10" fill="#ffffff" opacity="0.15"/>
+  <path d="M160 22 l18 -6 l-6 18" fill="#008000" opacity="0.9"/>
+</svg>
+

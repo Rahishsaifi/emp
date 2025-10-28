@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Login - Employee Manager</title>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<div class="center">
+		<div class="card" style="max-width:420px;width:100%">
+			<div style="display:flex; justify-content:center; margin-bottom:12px;">
+				<picture>
+					<source srcset="assets/IndiGo_logo_2x.avif" type="image/avif">
+					<img src="assets/IndiGo_logo_2x.avif" alt="IndiGo Airlines" style="height:48px;"/>
+				</picture>
+			</div>
+			<h2 style="margin-top:0;margin-bottom:8px">Welcome</h2>
+			<p class="muted" style="margin-top:0;margin-bottom:16px">Enter 6-digit PIN to continue</p>
+			<input id="pin" class="input pin-input" type="password" maxlength="6" placeholder="••••••" autofocus />
+			<div style="margin-top:14px; display:flex; justify-content:flex-end; gap:10px;">
+				<button id="loginBtn" class="btn">Login</button>
+			</div>
+			<p id="error" class="muted" style="color:#b91c1c; display:none; margin-top:10px;">Invalid PIN</p>
+		</div>
+	</div>
+
+	<footer style="position:fixed;left:0;right:0;bottom:0;background:#000099;color:#fff;padding:8px 16px;border-top:1px solid rgba(0,0,0,0.05);">
+		<div class="container" style="display:flex;justify-content:space-between;align-items:center;padding:0;">
+			<span style="font-weight:600;">
+                InterGlobe Aviation (IndiGo)</span>
+			<span class="muted" style="color:#e5e7eb;">© 2025 IndiGo All rights reserved.</span>
+		</div>
+	</footer>
+	<script>
+		const pin = document.getElementById('pin');
+		const loginBtn = document.getElementById('loginBtn');
+		const error = document.getElementById('error');
+
+		function attemptLogin(){
+			if(pin.value === '123456'){
+				window.api && window.api.setLoggedIn(true);
+				window.location.href = 'home.html';
+			} else {
+				error.style.display = 'block';
+			}
+		}
+
+		pin.addEventListener('keyup', (e)=>{ if(e.key === 'Enter') attemptLogin(); });
+		loginBtn.addEventListener('click', attemptLogin);
+
+		// static footer year per request
+	</script>
+</body>
+</html>
+
+

@@ -1,0 +1,33 @@
+# Node/Electron
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+
+# Build outputs
+dist/
+out/
+build/
+coverage/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Environment / secrets
+.env
+.env.*
+
+# Electron runtime
+*.pid
+*.seed
+*.log
+
+# App data (avoid committing real employee data)
+data/*.json
+
+

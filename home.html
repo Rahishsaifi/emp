@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Home - Employee Manager</title>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<header class="header">
+		<div class="header-inner">
+			<div class="title">Employee Manager</div>
+			<div></div>
+		</div>
+	</header>
+	<div class="container">
+		<h3 style="margin-top:12px;">Imported Months</h3>
+		<p class="muted" style="margin-top:4px;">Each card represents a saved month.</p>
+		<div id="monthsGrid" class="grid" style="margin-top:16px;"></div>
+	</div>
+
+	<!-- Import Modal -->
+	<div id="modalBackdrop" class="modal-backdrop">
+		<div class="modal">
+			<h3>Save As Month</h3>
+			<p class="muted">Enter label like "Jan 2025"</p>
+			<input id="monthInput" class="input" placeholder="e.g., Jan 2025" />
+			<div class="modal-actions">
+				<button id="cancelModal" class="btn btn-secondary">Cancel</button>
+				<button id="saveMonthBtn" class="btn">Save</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Delete PIN Modal -->
+	<div id="deleteModalBackdrop" class="modal-backdrop">
+		<div class="modal">
+			<h3>Confirm Delete</h3>
+			<p class="muted">Enter 6-digit PIN to delete this month</p>
+			<input id="deletePinInput" class="input pin-input" type="password" maxlength="6" placeholder="••••••" />
+			<div class="modal-actions">
+				<button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+				<button id="confirmDeleteBtn" class="btn" style="background:#dc2626">Delete</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="renderer.js"></script>
+	<script>
+		window.addEventListener('DOMContentLoaded', () => {
+			window.appHome && window.appHome.init();
+		});
+	</script>
+    <!-- Footer -->
+    <footer style="position:fixed;left:0;right:0;bottom:0;background:#000099;color:#fff;padding:8px 16px;border-top:1px solid rgba(0,0,0,0.05);">
+		<div class="container" style="display:flex;justify-content:space-between;align-items:center;padding:0;">
+			<span style="font-weight:600;">InterGlobe Aviation (IndiGo)</span>
+			<span class="muted" style="color:#e5e7eb;">© 2025 IndiGo All rights reserved.</span>
+		</div>
+	</footer>
+</body>
+</html>
+
+
