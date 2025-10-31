@@ -327,9 +327,12 @@ function closeDrawer() {
 
     async function showAllowanceFor(label, empId) {
         const sheet = mapAllowanceLabelToSheet(label);
-        if (!sheet) return;
+        if (!sheet) {
+            openDrawerWithRow({ Message: 'No matching sheet found for this item', Item: label });
+            return;
+        }
         const res = await window.api.readMonthJson(currentMonth, sheet);
-        if (!res.ok) return;
+        if (!res.ok) { openDrawerWithRow({ Message: 'Sheet file not found', Sheet: sheet }); return; }
         const rows = res.rows || [];
         const headers = Object.keys(rows[0] || {});
         const lowerToActual = Object.fromEntries(headers.map(h => [h.toLowerCase(), h]));
@@ -339,6 +342,7 @@ function closeDrawer() {
         if (matchKey) match = rows.find(r => String(r[matchKey]).toLowerCase() === String(empId || '').toLowerCase());
         if (!match) match = rows.find(r => Object.values(r).some(v => String(v).toLowerCase() === String(empId || '').toLowerCase()));
         if (match) openDrawerWithRow(match);
+        else openDrawerWithRow({ Message: 'No matching record for employee', Item: label, EmployeeId: String(empId || '') });
     }
 
     function renderSalaryDetails(row) {
@@ -393,7 +397,7 @@ function closeDrawer() {
             const isClickable = clickableLabels.includes(labelNorm);
             const detailText = defaultDetail || '-';
             const detailsEl = isClickable && empId
-                ? el('a', { href: '#', onclick: (e) => { e.preventDefault(); showAllowanceFor(label, empId); } }, detailText)
+                ? el('a', { href: '#', class: 'pslip-link', onclick: (e) => { e.preventDefault(); showAllowanceFor(label, empId); } }, detailText)
                 : el('span', {}, detailText);
             const tr = el('tr', {},
                 el('td', {}, label),

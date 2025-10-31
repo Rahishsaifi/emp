@@ -20,9 +20,9 @@ body {
 }
 
 .container {
-	max-width: 100%;
-	margin: 0 auto;
-	padding: 12px 16px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 12px 16px 90px; /* bottom space so fixed footer doesn't overlap */
 }
 
 /* Card */
