@@ -5,6 +5,19 @@ const XLSX = require('xlsx');
 
 const DATA_DIR = path.join(__dirname, 'data');
 
+function monthKeyToDir(monthKey) {
+	const safe = monthKey.toLowerCase().replace(/\s+/g, '-');
+	return path.join(DATA_DIR, safe);
+}
+
+function normalizeSheetName(name) {
+	return String(name || '')
+		.trim()
+		.replace(/[\\/]+/g, '-')
+		.replace(/\s+/g, '-')
+		.toLowerCase();
+}
+
 function ensureDataDir() {
 	if (!fs.existsSync(DATA_DIR)) {
 		fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -64,15 +77,27 @@ function readJsonForMonth(monthKey) {
 }
 
 function listSavedMonths() {
-	ensureDataDir();
-	const files = fs.readdirSync(DATA_DIR).filter((f) => f.endsWith('.json'));
-	// Convert back to display like "Jan 2025" from "jan-2025.json"
-	return files.map((f) => {
-		const base = f.replace(/\.json$/, '');
-		const [mon, year] = base.split('-');
-		const dispMon = mon.charAt(0).toUpperCase() + mon.slice(1, 3);
-		return `${dispMon} ${year}`;
-	});
+    ensureDataDir();
+    const entries = fs.readdirSync(DATA_DIR, { withFileTypes: true });
+    const monthKeys = new Set();
+    for (const e of entries) {
+        if (e.isFile() && e.name.endsWith('.json')) {
+            const base = e.name.replace(/\.json$/, '');
+            const parts = base.split('-');
+            const mon = parts[0] || '';
+            const year = parts[1] || '';
+            const dispMon = mon.charAt(0).toUpperCase() + mon.slice(1, 3);
+            monthKeys.add(`${dispMon} ${year}`);
+        } else if (e.isDirectory()) {
+            const base = e.name;
+            const parts = base.split('-');
+            const mon = parts[0] || '';
+            const year = parts[1] || '';
+            const dispMon = mon.charAt(0).toUpperCase() + mon.slice(1, 3);
+            monthKeys.add(`${dispMon} ${year}`);
+        }
+    }
+    return Array.from(monthKeys);
 }
 
 ipcMain.handle('get:saved-months', () => {
@@ -90,44 +115,86 @@ ipcMain.handle('open:excel-dialog', async () => {
 });
 
 ipcMain.handle('parse:excel-to-json', async (_evt, { filePath }) => {
-	try {
-		const workbook = XLSX.readFile(filePath);
-		const firstSheetName = workbook.SheetNames[0];
-		const worksheet = workbook.Sheets[firstSheetName];
-		const json = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-		return { ok: true, rows: json };
-	} catch (e) {
-		return { ok: false, error: e.message };
-	}
+    try {
+        const workbook = XLSX.readFile(filePath);
+        const sheets = {};
+        for (const sheetName of workbook.SheetNames) {
+            const ws = workbook.Sheets[sheetName];
+            const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+            sheets[sheetName] = json;
+        }
+        return { ok: true, sheets };
+    } catch (e) {
+        return { ok: false, error: e.message };
+    }
 });
 
-ipcMain.handle('save:month-json', async (_evt, { monthKey, rows }) => {
-	try {
-		ensureDataDir();
-		const filePath = path.join(DATA_DIR, monthKeyToFilename(monthKey));
-		fs.writeFileSync(filePath, JSON.stringify(rows, null, 2), 'utf-8');
-		return { ok: true };
-	} catch (e) {
-		return { ok: false, error: e.message };
-	}
+ipcMain.handle('save:month-json', async (_evt, { monthKey, sheets }) => {
+    try {
+        ensureDataDir();
+        const dir = monthKeyToDir(monthKey);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        for (const [sheetName, rows] of Object.entries(sheets || {})) {
+            const normalized = normalizeSheetName(sheetName);
+            const target = path.join(dir, `${normalized}.json`);
+            fs.writeFileSync(target, JSON.stringify(rows, null, 2), 'utf-8');
+        }
+        const firstSheetName = Object.keys(sheets || {})[0];
+        if (firstSheetName) {
+            const legacyPath = path.join(DATA_DIR, monthKeyToFilename(monthKey));
+            fs.writeFileSync(legacyPath, JSON.stringify(sheets[firstSheetName] || [], null, 2), 'utf-8');
+        }
+        return { ok: true };
+    } catch (e) {
+        return { ok: false, error: e.message };
+    }
 });
 
-ipcMain.handle('read:month-json', async (_evt, { monthKey }) => {
-	const data = readJsonForMonth(monthKey);
-	if (!data) return { ok: false, error: 'Not found' };
-	return { ok: true, rows: data };
+ipcMain.handle('read:month-json', async (_evt, { monthKey, sheet }) => {
+    ensureDataDir();
+    const dir = monthKeyToDir(monthKey);
+    if (sheet) {
+        const file = path.join(dir, `${normalizeSheetName(sheet)}.json`);
+        if (!fs.existsSync(file)) return { ok: false, error: 'Not found' };
+        try {
+            const raw = fs.readFileSync(file, 'utf-8');
+            return { ok: true, rows: JSON.parse(raw) };
+        } catch (e) {
+            return { ok: false, error: e.message };
+        }
+    }
+    const data = readJsonForMonth(monthKey);
+    if (!data) return { ok: false, error: 'Not found' };
+    return { ok: true, rows: data };
+});
+
+ipcMain.handle('list:month-sheets', async (_evt, { monthKey }) => {
+    try {
+        const dir = monthKeyToDir(monthKey);
+        if (!fs.existsSync(dir)) return { ok: true, sheets: [] };
+        const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+        const sheets = files.map(f => f.replace(/\.json$/, ''));
+        return { ok: true, sheets };
+    } catch (e) {
+        return { ok: false, error: e.message };
+    }
 });
 
 ipcMain.handle('delete:month-json', async (_evt, { monthKey }) => {
-	try {
-		ensureDataDir();
-		const filePath = path.join(DATA_DIR, monthKeyToFilename(monthKey));
-		if (!fs.existsSync(filePath)) return { ok: false, error: 'Not found' };
-		fs.unlinkSync(filePath);
-		return { ok: true };
-	} catch (e) {
-		return { ok: false, error: e.message };
-	}
+    try {
+        ensureDataDir();
+        const legacyFile = path.join(DATA_DIR, monthKeyToFilename(monthKey));
+        const dir = monthKeyToDir(monthKey);
+        if (fs.existsSync(dir)) {
+            fs.rmSync(dir, { recursive: true, force: true });
+        }
+        if (fs.existsSync(legacyFile)) {
+            fs.unlinkSync(legacyFile);
+        }
+        return { ok: true };
+    } catch (e) {
+        return { ok: false, error: e.message };
+    }
 });
 
 function sendLogoutToFocusedWindow() {

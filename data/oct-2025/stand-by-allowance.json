@@ -1,0 +1,12 @@
+[
+  {
+    "empId": 1,
+    "Rate": 10,
+    "Allwance": 200
+  },
+  {
+    "empId": 2,
+    "Rate": 20,
+    "Allwance": 500
+  }
+]

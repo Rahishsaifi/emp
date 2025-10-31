@@ -177,3 +177,18 @@ tbody td { border-bottom: 1px solid var(--border); padding: 10px; }
 .chip { display:inline-block; padding:4px 8px; border:1px solid var(--border); border-radius:999px; background:#f8fafc; font-size:12px; }
 
 
+/* Month layout */
+.month-layout { display:flex; gap:12px; align-items:flex-start; }
+.sheet-list { display:flex; flex-direction:column; gap:6px; }
+.sheet-item { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:8px; cursor:pointer; }
+.sheet-item:hover { background:#f8fafc; }
+.sheet-item.active { background:#eef2ff; border-color:#c7d2fe; }
+
+/* Payslip table styles (compact, bordered) */
+.pslip-wrap { width: 100%; max-width: 920px; margin: 0 auto; }
+.pslip-title { padding: 10px; border: 1px solid #000; border-bottom: none; font-weight: 700; }
+.pslip-table { width: 100%; border-collapse: collapse; border: 1px solid #000; }
+.pslip-table td, .pslip-table th { border: 1px solid #000; padding: 6px; }
+.pslip-header { background: #eeeeee; font-weight: 700; }
+.pslip-hl { background: #d9ead3; }
+.pslip-link { color: var(--primary); text-decoration: underline; cursor: pointer; }

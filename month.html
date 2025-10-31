@@ -18,22 +18,22 @@
 	</header>
 	<div class="container">
 		<h2 id="monthTitle" style="margin:4px 0 8px 0;">Month</h2>
-		<div class="card" style="margin-top:8px;">
-			<div style="display:flex; gap:10px; align-items:center;">
-				<input id="empId" class="input" placeholder="Employee ID" />
-				<button id="searchBtn" class="btn">Search</button>
+		<div style="display:flex; flex-direction:column; gap:10px;">
+			<div class="card">
+					<div style="display:flex; gap:10px; align-items:center;">
+						<input id="empId" class="input" placeholder="Employee ID" />
+						<button id="searchBtn" class="btn">Search</button>
+					</div>
+				</div>
+			<div class="card">
+				<h3 style="margin:0 0 8px 0;">Employee Details</h3>
+				<div id="employeeDetails"></div>
+			</div>
+			<div class="card">
+				<h3 style="margin:0 0 8px 0;">Salary Details</h3>
+				<div id="results"></div>
 			</div>
 		</div>
-
-		<div class="card" style="margin-top:10px;">
-			<h3 style="margin:0 0 8px 0;">Salary Summary</h3>
-			<p class="muted" style="margin:0 0 12px 0;">Allowances, Leaves, and Total for selected employee</p>
-			<div id="summary" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;"></div>
-		</div>
-
-		<div class="card" style="margin-top:10px;">
-			<h3 style="margin:0 0 8px 0;">Records</h3>
-			<div id="results"></div>
 		</div>
 	</div>
 
